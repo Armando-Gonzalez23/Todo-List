@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Todo-List</title>
+        <script src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script>
+        <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+        
+        <style>
+          body{
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            color: aliceblue;
+          }
+
+          main{
+            width: 100%;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+           
+          }
+
+          h1{text-align: center;}
+
+          .formulario{
+            display: flex;
+            flex-direction: row;
+            width: 32em;
+            height: 2.5em;
+            border: 6px solid rgb(115, 114, 114);
+            border-radius: 10px;
+           
+          }
+
+          .campo{
+            width: 30em;
+            height: 1.5em;
+            font-size: 1.5em;
+            background-color: darkcyan;
+            color: beige;
+            
+          }
+
+          .agregar{
+            color: darkcyan;
+            font-size: 1em;
+            width: 8em;
+            height: 2.5em;
+          }
+
+          .active{
+            list-style: none;
+            align-items: center;
+            background-color: darkcyan;
+            
+          }
+
+          ul{
+            display: flex;
+            flex-direction: column;
+            margin-left: -2em;
+            
+          }
+
+          .item input[type=checkbox]{
+            transform: scale(1.5);
+            margin-left: 1em;
+          }
+
+          .item{
+            margin-top: 0.30em;
+          }
+
+          label{
+            margin-left: 1em;
+          }
+
+          input[type="checkbox"]:checked + label {
+           text-decoration: line-through;
+          }
+        
+        </style>
+
+        <script type="text/babel">
+        const { useState,useEffect } = React;
+
+
+        function App(){
+
+const [id,setId]= useState(1);
+const [tareas,setTareas]=useState([]);
+
+useEffect(() => {
+    const datos = JSON.parse(localStorage.getItem('tareas'));
+    if (datos) {
+      setTareas(datos);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('tareas', JSON.stringify(tareas));
+  }, [tareas]);
+
+  
+
+function agregar(item){
+  const nuevo = { id,item}
+  const copia = [...tareas,nuevo]
+  setTareas(copia)
+  setId(id+1)
+  
+}
+
+function borrar(id){
+  const copia = tareas.filter(tarea => tarea.id !== id)
+  setTareas(copia)
+  
+}
+
+  return(
+    <>
+    <main>
+      <h1>Lista de tareas</h1>
+    <Formulario alAgregar={agregar}/>
+    <ListaDeTareas tareas={tareas} alBorrar={borrar}/>
+    </main>
+    </>
+  )}
+
+
+function Formulario({ alAgregar }) {
+    const [item, SetItem] = useState();
+
+
+    function actualizar(e){
+      SetItem(e.target.value);
+    }
+    
+    function agregar(e){
+     alAgregar(item);
+     SetItem("")
+     e.preventDefault();
+     
+    }
+    
+    return (
+        <form className="formulario">
+          <input className="campo" type="text" value={item} onChange={actualizar}   />
+          <button className="agregar" onClick= {agregar}>agregar</button>
+        </form>
+    )}
+
+function ListaDeTareas({tareas,alBorrar}){
+  return(
+    <ul>
+      {tareas.map(tarea =><Tarea key={tarea.id} tarea={tarea} alBorrar={alBorrar}/>
+        )}
+      </ul>
+  )}
+
+function Tarea({tarea,alBorrar}){
+  
+function borrar(){
+  alBorrar(tarea.id);
+}
+
+
+
+return (
+  <li className="active formulario">
+    <div className="campo item"><input type="checkbox" /><label >{tarea.item}</label></div>
+    <button className="agregar" onClick={borrar}>borrar</button>
+    </li>
+   );
+
+  }
+
+
+    ReactDOM.render(<App/>, document.getElementById('root'));
+        </script>
+    </head>
+    <body>
+        <div id="root"></div>
+    </body>
+</html>
